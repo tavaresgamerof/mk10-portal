@@ -109,7 +109,7 @@ export default function PatrocinadoresPage() {
           <p className="text-text-muted text-lg mb-6 max-w-xl mx-auto">
             Divulgue sua marca para milhares de torcedores apaixonados.
           </p>
-          <a href="/propostas" className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-background font-bold px-8 py-4 rounded-xl text-lg transition-all glow-green">
+          <a href="/propostas" className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-background font-bold px-8 py-4 rounded-xl text-lg transition-all glow-primary">
             Enviar Proposta
           </a>
         </div>

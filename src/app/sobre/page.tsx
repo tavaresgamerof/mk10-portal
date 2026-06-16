@@ -62,7 +62,7 @@ export default function SobrePage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-6 -left-6 bg-dark-card border border-primary/30 rounded-2xl p-6 glow-green">
+            <div className="absolute -bottom-6 -left-6 bg-dark-card border border-primary/30 rounded-2xl p-6 glow-primary">
               <p className="text-3xl font-bold text-primary">MK10</p>
               <p className="text-text-muted text-sm">Esporte de Base</p>
             </div>

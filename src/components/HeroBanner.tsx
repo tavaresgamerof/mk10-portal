@@ -142,7 +142,7 @@ export function HeroBanner() {
             >
               <Link
                 href={slide.ctaLink}
-                className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-background font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl text-base sm:text-lg transition-all glow-green"
+                className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-background font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-xl text-base sm:text-lg transition-all glow-primary"
               >
                 <Play size={20} fill="currentColor" />
                 {slide.cta}

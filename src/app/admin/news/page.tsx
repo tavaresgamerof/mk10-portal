@@ -34,7 +34,7 @@ function saveNews(list: News[]) {
 }
 
 const getStatusClass = (status: string) => {
-  if (status === "publicado") return "bg-green-500/10 text-green-400";
+  if (status === "publicado") return "bg-blue-500/10 text-blue-400";
   if (status === "agendado") return "bg-yellow-500/10 text-yellow-400";
   return "bg-gray-500/10 text-gray-400";
 };

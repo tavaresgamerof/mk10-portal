@@ -41,7 +41,7 @@ export function LiveIndicator() {
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10 mb-16">
-      <div className={`bg-dark-card border rounded-2xl overflow-hidden glow-green ${isLive ? "border-red-500/40" : "border-dark-border"}`}>
+      <div className={`bg-dark-card border rounded-2xl overflow-hidden glow-primary ${isLive ? "border-red-500/40" : "border-dark-border"}`}>
         <div className="p-4 border-b border-dark-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             {isLive ? (

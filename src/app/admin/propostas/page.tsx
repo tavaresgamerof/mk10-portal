@@ -19,7 +19,7 @@ interface Proposal {
 
 const statusColorMap: Record<string, string> = {
   pendente: "bg-yellow-500/10 text-yellow-400",
-  aprovado: "bg-green-500/10 text-green-400",
+  aprovado: "bg-blue-500/10 text-blue-400",
   rejeitado: "bg-red-500/10 text-red-400",
 };
 
@@ -74,7 +74,7 @@ export default function AdminPropostasPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {[
           { label: "Pendentes", value: list.filter((p) => p.status === "pendente").length, color: "text-yellow-400" },
-          { label: "Aprovadas", value: list.filter((p) => p.status === "aprovado").length, color: "text-green-400" },
+          { label: "Aprovadas", value: list.filter((p) => p.status === "aprovado").length, color: "text-blue-400" },
           { label: "Rejeitadas", value: list.filter((p) => p.status === "rejeitado").length, color: "text-red-400" },
         ].map((s, i) => (
           <div key={i} className="bg-dark-card border border-dark-border rounded-2xl p-5 text-center">
@@ -200,7 +200,7 @@ export default function AdminPropostasPage() {
               <div className="flex gap-3">
                 {selectedProposal.status === "pendente" && (
                   <>
-                    <button onClick={() => updateStatus(selectedProposal.id, "aprovado")} className="flex-1 bg-green-500/10 border border-green-500/30 text-green-400 font-bold py-2.5 rounded-xl text-sm transition-all hover:bg-green-500/20 flex items-center justify-center gap-1">
+                    <button onClick={() => updateStatus(selectedProposal.id, "aprovado")} className="flex-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 font-bold py-2.5 rounded-xl text-sm transition-all hover:bg-blue-500/20 flex items-center justify-center gap-1">
                       <Check size={14} /> Aprovar
                     </button>
                     <button onClick={() => updateStatus(selectedProposal.id, "rejeitado")} className="flex-1 bg-red-500/10 border border-red-500/30 text-red-400 font-bold py-2.5 rounded-xl text-sm transition-all hover:bg-red-500/20 flex items-center justify-center gap-1">

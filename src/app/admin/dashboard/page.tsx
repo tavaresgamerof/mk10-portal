@@ -124,7 +124,7 @@ export default function DashboardPage() {
     { label: "Transmissoes", value: stats.broadcasts, icon: Radio, color: "text-red-400" },
     { label: "Patrocinadores", value: stats.sponsors, icon: Handshake, color: "text-gold" },
     { label: "Propostas Pendentes", value: stats.proposalsPending, icon: FileText, color: "text-yellow-400" },
-    { label: "Propostas Aprovadas", value: stats.proposalsApproved, icon: FileText, color: "text-green-400" },
+    { label: "Propostas Aprovadas", value: stats.proposalsApproved, icon: FileText, color: "text-blue-400" },
     { label: "Propostas Rejeitadas", value: stats.proposalsRejected, icon: FileText, color: "text-red-400" },
     { label: "Total Propostas", value: stats.proposalsTotal, icon: TrendingUp, color: "text-primary" },
   ];

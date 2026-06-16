@@ -115,7 +115,7 @@ export default function PropostasPage() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {submitted ? (
-          <div className="bg-dark-card border border-primary/30 rounded-2xl p-10 text-center glow-green">
+          <div className="bg-dark-card border border-primary/30 rounded-2xl p-10 text-center glow-primary">
             <CheckCircle size={64} className="text-primary mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">Proposta Enviada!</h2>
             <p className="text-text-muted">Recebemos sua proposta. Entraremos em contato em breve.</p>
@@ -298,7 +298,7 @@ export default function PropostasPage() {
 
             <button
               type="submit"
-              className="w-full bg-primary hover:bg-primary-dark text-background font-bold px-8 py-4 rounded-xl text-lg transition-all flex items-center justify-center gap-2 glow-green"
+              className="w-full bg-primary hover:bg-primary-dark text-background font-bold px-8 py-4 rounded-xl text-lg transition-all flex items-center justify-center gap-2 glow-primary"
             >
               <Send size={20} />
               Solicitar Proposta

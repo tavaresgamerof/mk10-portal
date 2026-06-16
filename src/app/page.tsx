@@ -27,7 +27,7 @@ export default function Home() {
           </p>
           <Link
             href="/propostas"
-            className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-background font-bold px-8 py-4 rounded-xl text-lg transition-all glow-green"
+            className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-background font-bold px-8 py-4 rounded-xl text-lg transition-all glow-primary"
           >
             Enviar Proposta
           </Link>

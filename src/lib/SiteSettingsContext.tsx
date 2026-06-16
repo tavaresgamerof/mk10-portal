@@ -15,10 +15,18 @@ interface SiteSettingsContextType {
 const SiteSettingsContext = createContext<SiteSettingsContextType | undefined>(undefined);
 
 const STORAGE_KEY = "mk10_site_settings";
+const COLORS_VERSION_KEY = "mk10_colors_version";
+const CURRENT_COLORS_VERSION = "2";
 
 function loadSettings(): SiteSettings {
   if (typeof window === "undefined") return defaultSettings;
   try {
+    const storedVersion = localStorage.getItem(COLORS_VERSION_KEY);
+    if (storedVersion !== CURRENT_COLORS_VERSION) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(COLORS_VERSION_KEY, CURRENT_COLORS_VERSION);
+      return defaultSettings;
+    }
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);

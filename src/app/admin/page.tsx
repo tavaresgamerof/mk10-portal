@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
-          <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-background font-bold py-3 rounded-xl transition-all glow-green">
+          <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-background font-bold py-3 rounded-xl transition-all glow-primary">
             Entrar
           </button>
         </form>

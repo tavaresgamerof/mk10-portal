@@ -116,7 +116,7 @@ export default function GaleriaPage() {
                         <div className="w-full h-full bg-dark-surface flex items-center justify-center text-text-muted">Sem thumbnail</div>
                       )}
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center glow-green">
+                        <div className="w-14 h-14 bg-primary rounded-full flex items-center justify-center glow-primary">
                           <Play size={24} fill="currentColor" className="text-background ml-1" />
                         </div>
                       </div>
