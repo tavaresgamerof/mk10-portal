@@ -48,17 +48,31 @@ export default function AdminTransmissoesPage() {
   const [list, setList] = useState<Broadcast[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ homeTeam: "", awayTeam: "", championship: "Brasileirao Serie A", date: "", time: "" });
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration
   useEffect(() => { setList(loadBroadcasts()); }, []);
 
   const handleCreate = () => {
     if (!form.homeTeam || !form.awayTeam) return;
-    const updated = [{ id: Date.now(), ...form, status: "agendado", viewers: 0 }, ...list];
-    setList(updated);
-    saveBroadcasts(updated);
+    if (editingId !== null) {
+      const updated = list.map((b) => b.id === editingId ? { ...b, ...form } : b);
+      setList(updated);
+      saveBroadcasts(updated);
+      setEditingId(null);
+    } else {
+      const updated = [{ id: Date.now(), ...form, status: "agendado", viewers: 0 }, ...list];
+      setList(updated);
+      saveBroadcasts(updated);
+    }
     setForm({ homeTeam: "", awayTeam: "", championship: "Brasileirao Serie A", date: "", time: "" });
     setShowForm(false);
+  };
+
+  const handleEdit = (item: Broadcast) => {
+    setForm({ homeTeam: item.homeTeam, awayTeam: item.awayTeam, championship: item.championship, date: item.date, time: item.time });
+    setEditingId(item.id);
+    setShowForm(true);
   };
 
   const toggleLive = (id: number) => {
@@ -91,7 +105,7 @@ export default function AdminTransmissoesPage() {
 
       {showForm && (
         <div className="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6">
-          <h3 className="text-white font-bold mb-4">Nova Transmissao</h3>
+          <h3 className="text-white font-bold mb-4">{editingId !== null ? "Editar Transmissao" : "Nova Transmissao"}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <input type="text" placeholder="Time da casa" value={form.homeTeam} onChange={(e) => setForm({...form, homeTeam: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
             <input type="text" placeholder="Time visitante" value={form.awayTeam} onChange={(e) => setForm({...form, awayTeam: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
@@ -111,8 +125,8 @@ export default function AdminTransmissoesPage() {
             <input type="time" value={form.time} onChange={(e) => setForm({...form, time: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-all" />
           </div>
           <div className="flex gap-3">
-            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">Agendar</button>
-            <button onClick={() => setShowForm(false)} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
+            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">{editingId !== null ? "Salvar Alteracoes" : "Agendar"}</button>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm({ homeTeam: "", awayTeam: "", championship: "Brasileirao Serie A", date: "", time: "" }); }} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
           </div>
         </div>
       )}
@@ -152,7 +166,7 @@ export default function AdminTransmissoesPage() {
                       <button onClick={() => toggleLive(item.id)} className={"p-2 rounded-lg transition-all " + (item.status === "ao_vivo" ? "bg-red-500/10 text-red-400 hover:bg-red-500/20" : "bg-dark-surface text-text-muted hover:text-primary hover:bg-primary/10")}>
                         <Power size={14} />
                       </button>
-                      <button className="p-2 bg-dark-surface text-text-muted hover:text-primary rounded-lg transition-all hover:bg-primary/10"><Edit size={14} /></button>
+                      <button onClick={() => handleEdit(item)} className="p-2 bg-dark-surface text-text-muted hover:text-primary rounded-lg transition-all hover:bg-primary/10"><Edit size={14} /></button>
                       <button onClick={() => handleDelete(item.id)} className="p-2 bg-dark-surface text-text-muted hover:text-red-400 rounded-lg transition-all hover:bg-red-400/10"><Trash2 size={14} /></button>
                     </div>
                   </td>

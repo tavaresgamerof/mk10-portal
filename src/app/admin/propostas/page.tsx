@@ -9,6 +9,7 @@ interface Proposal {
   responsavel: string;
   whatsapp: string;
   email: string;
+  site: string;
   tipo: string;
   orcamento: string;
   mensagem: string;
@@ -183,6 +184,12 @@ export default function AdminPropostasPage() {
                   <p className="text-text-muted text-xs mb-1">E-mail</p>
                   <p className="text-foreground">{selectedProposal.email}</p>
                 </div>
+                {selectedProposal.site && (
+                  <div>
+                    <p className="text-text-muted text-xs mb-1">Site</p>
+                    <p className="text-foreground">{selectedProposal.site}</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-text-muted text-xs mb-1">Tipo de Parceria</p>
                   <p className="text-foreground">{selectedProposal.tipo}</p>

@@ -42,17 +42,31 @@ export default function AdminPatrocinadoresPage() {
   const [list, setList] = useState<Sponsor[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: "", tier: "Prata", site: "", logo: "" });
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration
   useEffect(() => { setList(loadSponsors()); }, []);
 
   const handleCreate = () => {
     if (!form.name) return;
-    const updated = [{ id: Date.now(), name: form.name, tier: form.tier, site: form.site, logo: form.logo, logoText: form.name }, ...list];
-    setList(updated);
-    saveSponsors(updated);
+    if (editingId !== null) {
+      const updated = list.map((s) => s.id === editingId ? { ...s, name: form.name, tier: form.tier, site: form.site, logo: form.logo } : s);
+      setList(updated);
+      saveSponsors(updated);
+      setEditingId(null);
+    } else {
+      const updated = [{ id: Date.now(), name: form.name, tier: form.tier, site: form.site, logo: form.logo, logoText: form.name }, ...list];
+      setList(updated);
+      saveSponsors(updated);
+    }
     setForm({ name: "", tier: "Prata", site: "", logo: "" });
     setShowForm(false);
+  };
+
+  const handleEdit = (sponsor: Sponsor) => {
+    setForm({ name: sponsor.name, tier: sponsor.tier, site: sponsor.site, logo: sponsor.logo });
+    setEditingId(sponsor.id);
+    setShowForm(true);
   };
 
   const handleDelete = (id: number) => {
@@ -75,7 +89,7 @@ export default function AdminPatrocinadoresPage() {
 
       {showForm && (
         <div className="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6">
-          <h3 className="text-white font-bold mb-4">Novo Patrocinador</h3>
+          <h3 className="text-white font-bold mb-4">{editingId !== null ? "Editar Patrocinador" : "Novo Patrocinador"}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <input type="text" placeholder="Nome da empresa" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
@@ -92,8 +106,8 @@ export default function AdminPatrocinadoresPage() {
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">Salvar</button>
-            <button onClick={() => setShowForm(false)} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
+            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">{editingId !== null ? "Salvar Alteracoes" : "Salvar"}</button>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm({ name: "", tier: "Prata", site: "", logo: "" }); }} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
           </div>
         </div>
       )}
@@ -120,7 +134,7 @@ export default function AdminPatrocinadoresPage() {
               </a>
             )}
             <div className="flex items-center gap-2 mt-4">
-              <button className="flex-1 bg-dark-surface border border-dark-border text-text-muted hover:text-primary py-2 rounded-xl text-xs font-medium transition-all hover:border-primary/30 flex items-center justify-center gap-1">
+              <button onClick={() => handleEdit(sponsor)} className="flex-1 bg-dark-surface border border-dark-border text-text-muted hover:text-primary py-2 rounded-xl text-xs font-medium transition-all hover:border-primary/30 flex items-center justify-center gap-1">
                 <Edit size={12} /> Editar
               </button>
               <button onClick={() => handleDelete(sponsor.id)} className="flex-1 bg-dark-surface border border-dark-border text-text-muted hover:text-red-400 py-2 rounded-xl text-xs font-medium transition-all hover:border-red-400/30 flex items-center justify-center gap-1">

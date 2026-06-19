@@ -40,6 +40,7 @@ export default function AdminVideosPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: "", category: "Melhores Momentos", videoId: "", thumbnail: "", videoFile: "" });
   const [uploadMode, setUploadMode] = useState<"youtube" | "upload">("youtube");
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration
   useEffect(() => { setVideosList(loadVideos()); }, []);
@@ -48,14 +49,28 @@ export default function AdminVideosPage() {
     if (!form.title) return;
     if (uploadMode === "youtube" && !form.videoId) return;
     if (uploadMode === "upload" && !form.videoFile) return;
-    const updated = [
-      { id: Date.now(), title: form.title, category: form.category, duration: "00:00", views: 0, featured: false, videoId: form.videoId, thumbnail: form.thumbnail, videoFile: form.videoFile },
-      ...videosList,
-    ];
-    setVideosList(updated);
-    saveVideos(updated);
+    if (editingId !== null) {
+      const updated = videosList.map((v) => v.id === editingId ? { ...v, title: form.title, category: form.category, videoId: form.videoId, thumbnail: form.thumbnail, videoFile: form.videoFile } : v);
+      setVideosList(updated);
+      saveVideos(updated);
+      setEditingId(null);
+    } else {
+      const updated = [
+        { id: Date.now(), title: form.title, category: form.category, duration: "00:00", views: 0, featured: false, videoId: form.videoId, thumbnail: form.thumbnail, videoFile: form.videoFile },
+        ...videosList,
+      ];
+      setVideosList(updated);
+      saveVideos(updated);
+    }
     setForm({ title: "", category: "Melhores Momentos", videoId: "", thumbnail: "", videoFile: "" });
     setShowForm(false);
+  };
+
+  const handleEdit = (video: Video) => {
+    setForm({ title: video.title, category: video.category, videoId: video.videoId, thumbnail: video.thumbnail, videoFile: video.videoFile });
+    setUploadMode(video.videoId ? "youtube" : "upload");
+    setEditingId(video.id);
+    setShowForm(true);
   };
 
   const toggleFeatured = (id: number) => {
@@ -90,7 +105,7 @@ export default function AdminVideosPage() {
 
       {showForm && (
         <div className="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6">
-          <h3 className="text-white font-bold mb-4">Novo Video</h3>
+          <h3 className="text-white font-bold mb-4">{editingId !== null ? "Editar Video" : "Novo Video"}</h3>
           <div className="flex gap-2 mb-6">
             <button onClick={() => setUploadMode("youtube")} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${uploadMode === "youtube" ? "bg-primary text-background" : "bg-dark-surface text-text-muted hover:text-foreground"}`}>
               YouTube
@@ -119,8 +134,8 @@ export default function AdminVideosPage() {
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">Adicionar</button>
-            <button onClick={() => setShowForm(false)} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
+            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">{editingId !== null ? "Salvar Alteracoes" : "Adicionar"}</button>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm({ title: "", category: "Melhores Momentos", videoId: "", thumbnail: "", videoFile: "" }); }} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
           </div>
         </div>
       )}
@@ -149,7 +164,7 @@ export default function AdminVideosPage() {
                 <button onClick={() => toggleFeatured(video.id)} className={"p-1.5 rounded-lg transition-all " + (video.featured ? "bg-gold/20 text-gold" : "bg-dark-surface text-text-muted hover:text-gold")}>
                   <Star size={14} fill={video.featured ? "currentColor" : "none"} />
                 </button>
-                <button className="p-1.5 bg-dark-surface text-text-muted hover:text-primary rounded-lg transition-all"><Edit size={14} /></button>
+                <button onClick={() => handleEdit(video)} className="p-1.5 bg-dark-surface text-text-muted hover:text-primary rounded-lg transition-all"><Edit size={14} /></button>
                 <button onClick={() => handleDelete(video.id)} className="p-1.5 bg-dark-surface text-text-muted hover:text-red-400 rounded-lg transition-all"><Trash2 size={14} /></button>
               </div>
             </div>

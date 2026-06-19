@@ -78,6 +78,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <LogOut size={18} />
             Voltar ao Site
           </Link>
+          <button
+            onClick={() => {
+              localStorage.removeItem("mk10_admin_auth");
+              localStorage.removeItem("mk10_admin_user");
+              router.replace("/admin");
+            }}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-muted hover:text-red-400 hover:bg-red-400/10 transition-all w-full"
+          >
+            <LogOut size={18} />
+            Sair do Painel
+          </button>
         </div>
       </aside>
 

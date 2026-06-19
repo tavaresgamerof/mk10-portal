@@ -59,7 +59,8 @@ export function LatestNews() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <article className="bg-dark-card border border-dark-border rounded-2xl overflow-hidden card-hover group cursor-pointer">
-          <div className="relative h-64 overflow-hidden">
+          <Link href={`/news/${featured.id}`} className="block">
+            <div className="relative h-64 overflow-hidden">
             {featured.image ? (
               <img src={featured.image} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             ) : (
@@ -77,11 +78,12 @@ export function LatestNews() {
                 <span className="flex items-center gap-1"><Eye size={12} />{formatViews(featured.views)}</span>
               </div>
             </div>
-          </div>
+            </div>
+          </Link>
         </article>
 
         {rest.slice(0, 2).map((item) => (
-          <article key={item.id} className="bg-dark-card border border-dark-border rounded-2xl overflow-hidden card-hover group cursor-pointer flex h-full">
+          <Link href={`/news/${item.id}`} key={item.id} className="bg-dark-card border border-dark-border rounded-2xl overflow-hidden card-hover group cursor-pointer flex h-full">
             <div className="relative w-48 flex-shrink-0 overflow-hidden">
               {item.image ? (
                 <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -97,7 +99,7 @@ export function LatestNews() {
                 <span className="flex items-center gap-1"><Eye size={10} />{formatViews(item.views)}</span>
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>

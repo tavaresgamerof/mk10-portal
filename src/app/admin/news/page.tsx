@@ -9,6 +9,7 @@ interface News {
   title: string;
   author: string;
   category: string;
+  content: string;
   status: string;
   date: string;
   views: number;
@@ -44,6 +45,7 @@ export default function AdminNewsPage() {
   const [showForm, setShowForm] = useState(false);
   const [newsList, setNewsList] = useState<News[]>([]);
   const [form, setForm] = useState({ title: "", author: "", category: "Brasileirao", content: "", image: "" });
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration
   useEffect(() => { setNewsList(loadNews()); }, []);
@@ -52,18 +54,37 @@ export default function AdminNewsPage() {
 
   const handleCreate = () => {
     if (!form.title || !form.author) return;
-    const updated = [
-      { id: Date.now(), title: form.title, author: form.author, category: form.category, status: "rascunho", date: new Date().toLocaleDateString("pt-BR"), views: 0, image: form.image },
-      ...newsList,
-    ];
-    setNewsList(updated);
-    saveNews(updated);
+    if (editingId !== null) {
+      const updated = newsList.map((n) => n.id === editingId ? { ...n, title: form.title, author: form.author, category: form.category, content: form.content, image: form.image } : n);
+      setNewsList(updated);
+      saveNews(updated);
+      setEditingId(null);
+    } else {
+      const updated = [
+        { id: Date.now(), title: form.title, author: form.author, category: form.category, content: form.content, status: "rascunho", date: new Date().toLocaleDateString("pt-BR"), views: 0, image: form.image },
+        ...newsList,
+      ];
+      setNewsList(updated);
+      saveNews(updated);
+    }
     setForm({ title: "", author: "", category: "Brasileirao", content: "", image: "" });
     setShowForm(false);
   };
 
+  const handleEdit = (item: News) => {
+    setForm({ title: item.title, author: item.author, category: item.category, content: item.content || "", image: item.image });
+    setEditingId(item.id);
+    setShowForm(true);
+  };
+
   const handleDelete = (id: number) => {
     const updated = newsList.filter((n) => n.id !== id);
+    setNewsList(updated);
+    saveNews(updated);
+  };
+
+  const handlePublish = (id: number) => {
+    const updated = newsList.map((n) => n.id === id ? { ...n, status: n.status === "publicado" ? "rascunho" : "publicado" } : n);
     setNewsList(updated);
     saveNews(updated);
   };
@@ -82,7 +103,7 @@ export default function AdminNewsPage() {
 
       {showForm && (
         <div className="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6">
-          <h3 className="text-white font-bold mb-4">Nova Noticia</h3>
+          <h3 className="text-white font-bold mb-4">{editingId !== null ? "Editar Noticia" : "Nova Noticia"}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -105,8 +126,8 @@ export default function AdminNewsPage() {
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">Publicar</button>
-            <button onClick={() => setShowForm(false)} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
+            <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">{editingId !== null ? "Salvar Alteracoes" : "Publicar"}</button>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm({ title: "", author: "", category: "Brasileirao", content: "", image: "" }); }} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
           </div>
         </div>
       )}
@@ -152,16 +173,16 @@ export default function AdminNewsPage() {
                     <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-lg">{item.category}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={"text-xs px-2 py-1 rounded-lg font-medium " + getStatusClass(item.status)}>
+                    <button onClick={() => handlePublish(item.id)} className={"text-xs px-2 py-1 rounded-lg font-medium cursor-pointer transition-all hover:opacity-80 " + getStatusClass(item.status)}>
                       {item.status}
-                    </span>
+                    </button>
                   </td>
                   <td className="px-6 py-4 text-text-muted hidden md:table-cell">
                     <span className="flex items-center gap-1"><Eye size={12} />{item.views.toLocaleString()}</span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-text-muted hover:text-primary transition-colors rounded-lg hover:bg-primary/10"><Edit size={14} /></button>
+                      <button onClick={() => handleEdit(item)} className="p-2 text-text-muted hover:text-primary transition-colors rounded-lg hover:bg-primary/10"><Edit size={14} /></button>
                       <button onClick={() => handleDelete(item.id)} className="p-2 text-text-muted hover:text-red-400 transition-colors rounded-lg hover:bg-red-400/10"><Trash2 size={14} /></button>
                     </div>
                   </td>

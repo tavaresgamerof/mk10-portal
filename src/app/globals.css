@@ -28,7 +28,7 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--color-primary);
   --color-primary-dark: var(--color-primary-dark);
-  --color-gold: var(--color-secondary);
+  --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-blue-neon: var(--color-accent);
   --color-dark-surface: var(--color-surface);

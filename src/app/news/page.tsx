@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Eye, User, Search, Clock, Tag, Newspaper } from "lucide-react";
+import Link from "next/link";
 
 interface News {
   id: number;
@@ -93,7 +94,7 @@ export default function NewsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((item) => (
-                <article key={item.id} className="bg-dark-card border border-dark-border rounded-2xl overflow-hidden card-hover group cursor-pointer">
+                <Link href={`/news/${item.id}`} key={item.id} className="bg-dark-card border border-dark-border rounded-2xl overflow-hidden card-hover group cursor-pointer">
                   <div className="relative h-52 overflow-hidden">
                     {item.image ? (
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -114,7 +115,7 @@ export default function NewsPage() {
                       <span className="flex items-center gap-1"><Eye size={12} />{formatViews(item.views)}</span>
                     </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
 
