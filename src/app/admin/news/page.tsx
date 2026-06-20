@@ -53,7 +53,10 @@ export default function AdminNewsPage() {
   const filtered = newsList.filter((n) => n.title.toLowerCase().includes(search.toLowerCase()));
 
   const handleCreate = () => {
-    if (!form.title || !form.author) return;
+    if (!form.title || !form.author) {
+      alert("Preencha o Titulo e o Autor antes de publicar.");
+      return;
+    }
     if (editingId !== null) {
       const updated = newsList.map((n) => n.id === editingId ? { ...n, title: form.title, author: form.author, category: form.category, content: form.content, image: form.image } : n);
       setNewsList(updated);
@@ -107,8 +110,8 @@ export default function AdminNewsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" placeholder="Titulo da noticia" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-                <input type="text" placeholder="Autor" value={form.author} onChange={(e) => setForm({...form, author: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+                <input type="text" placeholder="Titulo da noticia *" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+                <input type="text" placeholder="Autor *" value={form.author} onChange={(e) => setForm({...form, author: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               </div>
               <select value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-all">
                 <option>Brasileirao</option>
