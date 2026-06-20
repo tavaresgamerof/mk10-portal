@@ -54,7 +54,7 @@ export default function AdminTransmissoesPage() {
   useEffect(() => { setList(loadBroadcasts()); }, []);
 
   const handleCreate = () => {
-    if (!form.homeTeam || !form.awayTeam) return;
+    if (!form.homeTeam || !form.awayTeam) { alert("Preencha os dois times antes de agendar."); return; }
     if (editingId !== null) {
       const updated = list.map((b) => b.id === editingId ? { ...b, ...form } : b);
       setList(updated);
@@ -107,8 +107,8 @@ export default function AdminTransmissoesPage() {
         <div className="bg-dark-card border border-dark-border rounded-2xl p-6 mb-6">
           <h3 className="text-white font-bold mb-4">{editingId !== null ? "Editar Transmissao" : "Nova Transmissao"}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <input type="text" placeholder="Time da casa" value={form.homeTeam} onChange={(e) => setForm({...form, homeTeam: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-            <input type="text" placeholder="Time visitante" value={form.awayTeam} onChange={(e) => setForm({...form, awayTeam: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+            <input type="text" placeholder="Time da casa *" value={form.homeTeam} onChange={(e) => setForm({...form, homeTeam: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+            <input type="text" placeholder="Time visitante *" value={form.awayTeam} onChange={(e) => setForm({...form, awayTeam: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
             <select value={form.championship} onChange={(e) => setForm({...form, championship: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-all">
               <option>Brasileirao Serie A</option>
               <option>Brasileirao Serie B</option>

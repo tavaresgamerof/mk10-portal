@@ -46,9 +46,9 @@ export default function AdminVideosPage() {
   useEffect(() => { setVideosList(loadVideos()); }, []);
 
   const handleCreate = () => {
-    if (!form.title) return;
-    if (uploadMode === "youtube" && !form.videoId) return;
-    if (uploadMode === "upload" && !form.videoFile) return;
+    if (!form.title) { alert("Preencha o titulo do video antes de adicionar."); return; }
+    if (uploadMode === "youtube" && !form.videoId) { alert("Informe o ID do video do YouTube."); return; }
+    if (uploadMode === "upload" && !form.videoFile) { alert("Envie um video antes de adicionar."); return; }
     if (editingId !== null) {
       const updated = videosList.map((v) => v.id === editingId ? { ...v, title: form.title, category: form.category, videoId: form.videoId, thumbnail: form.thumbnail, videoFile: form.videoFile } : v);
       setVideosList(updated);
@@ -116,7 +116,7 @@ export default function AdminVideosPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <input type="text" placeholder="Titulo do video" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+              <input type="text" placeholder="Titulo do video *" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               <select value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-all">
                 <option>Melhores Momentos</option>
                 <option>Entrevistas</option>
@@ -124,7 +124,7 @@ export default function AdminVideosPage() {
                 <option>Analises</option>
               </select>
               {uploadMode === "youtube" ? (
-                <input type="text" placeholder="ID do video YouTube" value={form.videoId} onChange={(e) => setForm({...form, videoId: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+                <input type="text" placeholder="ID do video YouTube *" value={form.videoId} onChange={(e) => setForm({...form, videoId: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               ) : (
                 <VideoUpload value={form.videoFile} onChange={(v) => setForm({...form, videoFile: v})} label="Video" />
               )}

@@ -48,7 +48,7 @@ export default function AdminPatrocinadoresPage() {
   useEffect(() => { setList(loadSponsors()); }, []);
 
   const handleCreate = () => {
-    if (!form.name) return;
+    if (!form.name) { alert("Preencha o nome da empresa antes de salvar."); return; }
     if (editingId !== null) {
       const updated = list.map((s) => s.id === editingId ? { ...s, name: form.name, tier: form.tier, site: form.site, logo: form.logo } : s);
       setList(updated);
@@ -92,7 +92,7 @@ export default function AdminPatrocinadoresPage() {
           <h3 className="text-white font-bold mb-4">{editingId !== null ? "Editar Patrocinador" : "Novo Patrocinador"}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <input type="text" placeholder="Nome da empresa" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+              <input type="text" placeholder="Nome da empresa *" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               <select value={form.tier} onChange={(e) => setForm({...form, tier: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-all">
                 <option>Master</option>
                 <option>Ouro</option>
