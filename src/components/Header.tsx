@@ -13,6 +13,7 @@ const navLinks = [
   { href: "/news", label: "Notícias" },
   { href: "/galeria", label: "Galeria" },
   { href: "/patrocinadores", label: "Patrocinadores" },
+  { href: "/patrocinar", label: "Torne-se Patrocinador" },
   { href: "/transmita", label: "Seja Parceiro" },
   { href: "/sobre", label: "Sobre" },
   { href: "/contato", label: "Contato" },
