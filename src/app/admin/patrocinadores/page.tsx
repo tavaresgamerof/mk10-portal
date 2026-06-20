@@ -27,8 +27,14 @@ function loadSponsors(): Sponsor[] {
   return [];
 }
 
-function saveSponsors(list: Sponsor[]) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch {}
+function saveSponsors(list: Sponsor[]): boolean {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return true;
+  } catch (e) {
+    console.error("Erro ao salvar patrocinadores:", e);
+    return false;
+  }
 }
 
 const tierColorMap: Record<string, string> = {
@@ -52,12 +58,12 @@ export default function AdminPatrocinadoresPage() {
     if (editingId !== null) {
       const updated = list.map((s) => s.id === editingId ? { ...s, name: form.name, tier: form.tier, site: form.site, logo: form.logo } : s);
       setList(updated);
-      saveSponsors(updated);
+      if (!saveSponsors(updated)) { alert("Erro ao salvar. A logo pode estar grande demais."); return; }
       setEditingId(null);
     } else {
       const updated = [{ id: Date.now(), name: form.name, tier: form.tier, site: form.site, logo: form.logo, logoText: form.name }, ...list];
       setList(updated);
-      saveSponsors(updated);
+      if (!saveSponsors(updated)) { alert("Erro ao salvar. A logo pode estar grande demais."); return; }
     }
     setForm({ name: "", tier: "Prata", site: "", logo: "" });
     setShowForm(false);

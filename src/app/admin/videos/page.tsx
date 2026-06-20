@@ -31,8 +31,14 @@ function loadVideos(): Video[] {
   return [];
 }
 
-function saveVideos(list: Video[]) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch {}
+function saveVideos(list: Video[]): boolean {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return true;
+  } catch (e) {
+    console.error("Erro ao salvar videos:", e);
+    return false;
+  }
 }
 
 export default function AdminVideosPage() {
@@ -52,7 +58,7 @@ export default function AdminVideosPage() {
     if (editingId !== null) {
       const updated = videosList.map((v) => v.id === editingId ? { ...v, title: form.title, category: form.category, videoId: form.videoId, thumbnail: form.thumbnail, videoFile: form.videoFile } : v);
       setVideosList(updated);
-      saveVideos(updated);
+      if (!saveVideos(updated)) { alert("Erro ao salvar. O video pode estar grande demais."); return; }
       setEditingId(null);
     } else {
       const updated = [
@@ -60,7 +66,7 @@ export default function AdminVideosPage() {
         ...videosList,
       ];
       setVideosList(updated);
-      saveVideos(updated);
+      if (!saveVideos(updated)) { alert("Erro ao salvar. O video pode estar grande demais."); return; }
     }
     setForm({ title: "", category: "Melhores Momentos", videoId: "", thumbnail: "", videoFile: "" });
     setShowForm(false);

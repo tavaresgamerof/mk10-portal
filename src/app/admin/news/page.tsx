@@ -30,8 +30,14 @@ function loadNews(): News[] {
   return [];
 }
 
-function saveNews(list: News[]) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch {}
+function saveNews(list: News[]): boolean {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return true;
+  } catch (e) {
+    console.error("Erro ao salvar noticias:", e);
+    return false;
+  }
 }
 
 const getStatusClass = (status: string) => {
@@ -60,15 +66,15 @@ export default function AdminNewsPage() {
     if (editingId !== null) {
       const updated = newsList.map((n) => n.id === editingId ? { ...n, title: form.title, author: form.author, category: form.category, content: form.content, image: form.image } : n);
       setNewsList(updated);
-      saveNews(updated);
+      if (!saveNews(updated)) { alert("Erro ao salvar. A imagem pode estar grande demais."); return; }
       setEditingId(null);
     } else {
       const updated = [
-        { id: Date.now(), title: form.title, author: form.author, category: form.category, content: form.content, status: "rascunho", date: new Date().toLocaleDateString("pt-BR"), views: 0, image: form.image },
+        { id: Date.now(), title: form.title, author: form.author, category: form.category, content: form.content, status: "publicado", date: new Date().toLocaleDateString("pt-BR"), views: 0, image: form.image },
         ...newsList,
       ];
       setNewsList(updated);
-      saveNews(updated);
+      if (!saveNews(updated)) { alert("Erro ao salvar. A imagem pode estar grande demais."); return; }
     }
     setForm({ title: "", author: "", category: "Brasileirao", content: "", image: "" });
     setShowForm(false);

@@ -28,8 +28,14 @@ function loadBroadcasts(): Broadcast[] {
   return [];
 }
 
-function saveBroadcasts(list: Broadcast[]) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch {}
+function saveBroadcasts(list: Broadcast[]): boolean {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return true;
+  } catch (e) {
+    console.error("Erro ao salvar transmissoes:", e);
+    return false;
+  }
 }
 
 const getStatusStyle = (status: string) => {
@@ -58,12 +64,12 @@ export default function AdminTransmissoesPage() {
     if (editingId !== null) {
       const updated = list.map((b) => b.id === editingId ? { ...b, ...form } : b);
       setList(updated);
-      saveBroadcasts(updated);
+      if (!saveBroadcasts(updated)) { alert("Erro ao salvar."); return; }
       setEditingId(null);
     } else {
       const updated = [{ id: Date.now(), ...form, status: "agendado", viewers: 0 }, ...list];
       setList(updated);
-      saveBroadcasts(updated);
+      if (!saveBroadcasts(updated)) { alert("Erro ao salvar."); return; }
     }
     setForm({ homeTeam: "", awayTeam: "", championship: "Brasileirao Serie A", date: "", time: "" });
     setShowForm(false);
