@@ -50,7 +50,7 @@ export default function AdminNewsPage() {
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [newsList, setNewsList] = useState<News[]>([]);
-  const [form, setForm] = useState({ title: "", author: "", category: "Brasileirao", content: "", image: "" });
+  const [form, setForm] = useState({ title: "", category: "", content: "", image: "" });
   const [editingId, setEditingId] = useState<number | null>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration
@@ -59,29 +59,29 @@ export default function AdminNewsPage() {
   const filtered = newsList.filter((n) => n.title.toLowerCase().includes(search.toLowerCase()));
 
   const handleCreate = () => {
-    if (!form.title || !form.author) {
-      alert("Preencha o Titulo e o Autor antes de publicar.");
+    if (!form.title) {
+      alert("Preencha o Titulo antes de publicar.");
       return;
     }
     if (editingId !== null) {
-      const updated = newsList.map((n) => n.id === editingId ? { ...n, title: form.title, author: form.author, category: form.category, content: form.content, image: form.image } : n);
+      const updated = newsList.map((n) => n.id === editingId ? { ...n, title: form.title, category: form.category, content: form.content, image: form.image } : n);
       setNewsList(updated);
       if (!saveNews(updated)) { alert("Erro ao salvar. A imagem pode estar grande demais."); return; }
       setEditingId(null);
     } else {
       const updated = [
-        { id: Date.now(), title: form.title, author: form.author, category: form.category, content: form.content, status: "publicado", date: new Date().toLocaleDateString("pt-BR"), views: 0, image: form.image },
+        { id: Date.now(), title: form.title, author: "MK10", category: form.category, content: form.content, status: "publicado", date: new Date().toLocaleDateString("pt-BR"), views: 0, image: form.image },
         ...newsList,
       ];
       setNewsList(updated);
       if (!saveNews(updated)) { alert("Erro ao salvar. A imagem pode estar grande demais."); return; }
     }
-    setForm({ title: "", author: "", category: "Brasileirao", content: "", image: "" });
+    setForm({ title: "", category: "", content: "", image: "" });
     setShowForm(false);
   };
 
   const handleEdit = (item: News) => {
-    setForm({ title: item.title, author: item.author, category: item.category, content: item.content || "", image: item.image });
+    setForm({ title: item.title, category: item.category, content: item.content || "", image: item.image });
     setEditingId(item.id);
     setShowForm(true);
   };
@@ -115,19 +115,8 @@ export default function AdminNewsPage() {
           <h3 className="text-white font-bold mb-4">{editingId !== null ? "Editar Noticia" : "Nova Noticia"}</h3>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" placeholder="Titulo da noticia *" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-                <input type="text" placeholder="Autor *" value={form.author} onChange={(e) => setForm({...form, author: e.target.value})} className="bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-              </div>
-              <select value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-all">
-                <option>Brasileirao</option>
-                <option>Europa</option>
-                <option>Transferencias</option>
-                <option>Selecao</option>
-                <option>Libertadores</option>
-                <option>Copa do Brasil</option>
-                <option>Destaque</option>
-              </select>
+              <input type="text" placeholder="Titulo da noticia *" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+              <input type="text" placeholder="Categoria *" value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               <textarea placeholder="Conteudo da noticia..." rows={6} value={form.content} onChange={(e) => setForm({...form, content: e.target.value})} className="w-full bg-dark-surface border border-dark-border rounded-xl px-4 py-3 text-foreground placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none" />
             </div>
             <div>
@@ -136,7 +125,7 @@ export default function AdminNewsPage() {
           </div>
           <div className="flex gap-3 mt-6">
             <button onClick={handleCreate} className="bg-primary hover:bg-primary-dark text-background font-bold px-6 py-2.5 rounded-xl text-sm transition-all">{editingId !== null ? "Salvar Alteracoes" : "Publicar"}</button>
-            <button onClick={() => { setShowForm(false); setEditingId(null); setForm({ title: "", author: "", category: "Brasileirao", content: "", image: "" }); }} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm({ title: "", category: "", content: "", image: "" }); }} className="bg-dark-surface border border-dark-border text-text-muted px-6 py-2.5 rounded-xl text-sm transition-all hover:text-foreground">Cancelar</button>
           </div>
         </div>
       )}
@@ -152,7 +141,6 @@ export default function AdminNewsPage() {
             <thead>
               <tr className="border-b border-dark-border">
                 <th className="text-left px-6 py-4 text-text-muted font-medium">Noticia</th>
-                <th className="text-left px-6 py-4 text-text-muted font-medium hidden md:table-cell">Autor</th>
                 <th className="text-left px-6 py-4 text-text-muted font-medium hidden lg:table-cell">Categoria</th>
                 <th className="text-left px-6 py-4 text-text-muted font-medium">Status</th>
                 <th className="text-left px-6 py-4 text-text-muted font-medium hidden md:table-cell">Views</th>
@@ -177,7 +165,6 @@ export default function AdminNewsPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-text-muted hidden md:table-cell">{item.author}</td>
                   <td className="px-6 py-4 hidden lg:table-cell">
                     <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-lg">{item.category}</span>
                   </td>

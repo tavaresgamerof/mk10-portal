@@ -20,21 +20,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [authed, setAuthed] = useState(false);
-
   const isLoginPage = pathname === "/admin";
+  const [authed, setAuthed] = useState(isLoginPage);
 
   useEffect(() => {
-    if (isLoginPage) {
-      setAuthed(true);
-      return;
-    }
+    if (isLoginPage) return;
     const isAuthed = localStorage.getItem("mk10_admin_auth") === "true";
     if (!isAuthed) {
       router.replace("/admin");
-    } else {
-      setAuthed(true);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage hydration on mount
+    setAuthed(isAuthed);
   }, [router, isLoginPage]);
 
   if (isLoginPage) {
