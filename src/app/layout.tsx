@@ -24,11 +24,8 @@ export const metadata: Metadata = {
   description: "Canal MK10 - A paixão pelo esporte de base fala mais alto! Transmissões ao vivo, entrevistas, papo de base e muito mais.",
   keywords: "esporte de base, futebol ao vivo, transmissão, MK10TV, mk10produtora",
   icons: {
-    icon: [
-      { url: "/logo-mk10.png", type: "image/png" },
-      { url: "/favicon.ico", type: "image/x-icon" },
-    ],
-    apple: "/apple-touch-icon.png",
+    icon: "/logo-mk10.png",
+    apple: "/logo-mk10.png",
   },
   openGraph: {
     title: "MK10TV | Esporte de Base Ao Vivo & Notícias",
