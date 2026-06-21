@@ -17,27 +17,20 @@ export interface YouTubeChannelState {
 const CHANNEL_ID = "UCwehhoJDFXjg7bcKB22JS2g";
 const CHANNEL_HANDLE = "@mk10produtora";
 
-const KNOWN_VIDEO_IDS = [
-  "HJo4w-GLf7M",
-  "DlLIvZ0ElL8",
-  "gvVPqIKCNx4",
-  "jT9k71cjL1Q",
-];
-
 async function fetchOEmbed(videoId: string): Promise<YouTubeVideo | null> {
   try {
     const res = await fetch(
       `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
-      { next: { revalidate: 300 } }
+      { next: { revalidate: 120 } }
     );
     if (!res.ok) return null;
     const data = await res.json();
     return {
       videoId,
       title: data.title ?? "MK10TV",
-      thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+      thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
       publishedAt: "",
-      isLive: data.title?.toLowerCase().includes("ao vivo") || data.title?.toLowerCase().includes("live") || false,
+      isLive: false,
       description: "",
     };
   } catch {
@@ -45,13 +38,54 @@ async function fetchOEmbed(videoId: string): Promise<YouTubeVideo | null> {
   }
 }
 
-function extractLiveStatus(html: string): boolean {
+function extractVideoIds(html: string): string[] {
+  const ids: string[] = [];
+  const patterns = [
+    /"videoId":"([a-zA-Z0-9_-]{11})"/g,
+    /\/watch\?v=([a-zA-Z0-9_-]{11})/g,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/g,
+  ];
+  for (const pattern of patterns) {
+    let m;
+    while ((m = pattern.exec(html)) !== null) {
+      if (!ids.includes(m[1])) ids.push(m[1]);
+    }
+  }
+  return ids;
+}
+
+function extractLiveStatus(html: string): { isLive: boolean; liveVideoId: string | null } {
   const lower = html.toLowerCase();
-  return (
+
+  const isLive =
     lower.includes('"isLive":true') ||
     lower.includes('"isLiveContent":true') ||
-    lower.includes("ao vivo")
-  );
+    lower.includes('"isLiveBroadcast":true') ||
+    lower.includes('"style":"LIVE"') ||
+    lower.includes('class="badge-style-type-live-now');
+
+  let liveVideoId: string | null = null;
+  if (isLive) {
+    const livePatterns = [
+      /"videoId":"([a-zA-Z0-9_-]{11})"[^}]*"isLiveBroadcast":\s*true/,
+      /"isLiveBroadcast":\s*true[^}]*"videoId":"([a-zA-Z0-9_-]{11})"/,
+      /"style":"LIVE"[^}]*"videoId":"([a-zA-Z0-9_-]{11})"/,
+      /"videoId":"([a-zA-Z0-9_-]{11})"[^}]*"style":"LIVE"/,
+    ];
+    for (const pattern of livePatterns) {
+      const match = pattern.exec(html);
+      if (match) {
+        liveVideoId = match[1];
+        break;
+      }
+    }
+    if (!liveVideoId) {
+      const allIds = extractVideoIds(html);
+      if (allIds.length > 0) liveVideoId = allIds[0];
+    }
+  }
+
+  return { isLive, liveVideoId };
 }
 
 export async function fetchChannelFeed(): Promise<YouTubeChannelState> {
@@ -65,51 +99,59 @@ export async function fetchChannelFeed(): Promise<YouTubeChannelState> {
   try {
     const pageHtml = await (await fetch(`https://www.youtube.com/channel/${CHANNEL_ID}/videos`, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Accept-Language": "pt-BR,pt;q=0.9",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       },
-      next: { revalidate: 60 },
+      next: { revalidate: 30 },
     }).catch(() => null))?.text();
 
-    const isLive = pageHtml ? extractLiveStatus(pageHtml) : false;
+    if (!pageHtml) return empty;
 
-    const extraIds = pageHtml
-      ? (() => {
-          const ids: string[] = [];
-          const pattern = /"videoId":"([a-zA-Z0-9_-]{11})"/g;
-          let m;
-          while ((m = pattern.exec(pageHtml)) !== null) {
-            if (!ids.includes(m[1]) && !KNOWN_VIDEO_IDS.includes(m[1])) ids.push(m[1]);
-          }
-          return ids.slice(0, 6);
-        })()
-      : [];
+    const { isLive, liveVideoId } = extractLiveStatus(pageHtml);
 
-    const allIds = [...KNOWN_VIDEO_IDS, ...extraIds].slice(0, 8);
+    let videoIds = extractVideoIds(pageHtml);
 
-    const videos = await Promise.all(allIds.map(fetchOEmbed));
+    const seen = new Set<string>();
+    videoIds = videoIds.filter((id) => {
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+
+    if (videoIds.length === 0) return { ...empty, isLive };
+
+    const videosToFetch = videoIds.slice(0, 10);
+    const videos = await Promise.all(videosToFetch.map(fetchOEmbed));
     const validVideos = videos.filter(Boolean) as YouTubeVideo[];
 
-    if (validVideos.length === 0) return { ...empty, isLive };
-
-    const liveVideo = isLive
-      ? validVideos.find((v) => v.isLive) ?? validVideos[0]
-      : null;
+    if (isLive && liveVideoId && validVideos.length > 0) {
+      let liveVideo = validVideos.find((v) => v.videoId === liveVideoId);
+      if (!liveVideo) {
+        const fetched = await fetchOEmbed(liveVideoId);
+        if (fetched) {
+          liveVideo = fetched;
+          validVideos.unshift(liveVideo);
+        }
+      }
+      if (liveVideo) {
+        liveVideo.isLive = true;
+        const idx = validVideos.findIndex((v) => v.videoId === liveVideoId);
+        if (idx > 0) {
+          validVideos.splice(idx, 1);
+          validVideos.unshift(liveVideo);
+        }
+      }
+    }
 
     return {
       isLive,
-      liveVideoId: liveVideo?.videoId ?? null,
-      latestVideo: validVideos[0],
+      liveVideoId: liveVideoId ?? null,
+      latestVideo: validVideos[0] ?? null,
       recentVideos: validVideos,
     };
   } catch {
-    const fallbackVideos = await Promise.all(KNOWN_VIDEO_IDS.map(fetchOEmbed));
-    const valid = fallbackVideos.filter(Boolean) as YouTubeVideo[];
-    return {
-      ...empty,
-      recentVideos: valid,
-      latestVideo: valid[0] ?? null,
-    };
+    return empty;
   }
 }
 

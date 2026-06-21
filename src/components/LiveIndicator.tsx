@@ -11,12 +11,18 @@ export function LiveIndicator() {
 
   useEffect(() => {
     const controller = new AbortController();
+    let intervalId: ReturnType<typeof setInterval>;
+
     async function load() {
       try {
         const res = await fetch("/api/youtube", { signal: controller.signal });
         if (res.ok) {
           const data = await res.json();
           setChannelData(data);
+          if (data.isLive) {
+            clearInterval(intervalId);
+            intervalId = setInterval(load, 15000);
+          }
         }
       } catch {
         // silent fail
@@ -25,8 +31,8 @@ export function LiveIndicator() {
       }
     }
     load();
-    const interval = setInterval(load, 30000);
-    return () => { controller.abort(); clearInterval(interval); };
+    intervalId = setInterval(load, 30000);
+    return () => { controller.abort(); clearInterval(intervalId); };
   }, []);
 
   const isLive = channelData?.isLive ?? false;
